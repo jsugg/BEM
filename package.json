@@ -1,0 +1,25 @@
+{
+  "name": "bun-bem",
+  "version": "1.0.0",
+  "description": "BEM: A virtual environment manager for Bun",
+  "main": "bin/bun-env",
+  "scripts": {
+    "test": "bun test"
+  },
+  "dependencies": {
+    "commander": "^8.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "bun-types": "latest"
+  },
+  "author": "Juan Sugg",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jsugg/bem.git"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
