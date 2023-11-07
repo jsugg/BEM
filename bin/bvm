@@ -1,0 +1,55 @@
+#!/bin/bash
+
+original_path=$(pwd)
+script_path="$(dirname "$(readlink -f "$0")")"
+cd "$script_path"
+
+function exit_script {
+  cd "$original_path"
+  exit "$1"
+}
+
+# Main entry point for bvm commands
+
+function show_help {
+  cat << EOF
+Usage: bvm <command> [options]
+
+Commands:
+  install     Install a new version of Bun
+  remove      Remove an installed version of Bun
+  switch      Switch to an installed version of Bun
+  package     Manage Bun packages
+  config      Manage global configuration
+  env         Manage Bun environments
+
+Use "bvm <command> --help" for more information about a command.
+EOF
+}
+
+if [ "$#" -eq 0 ]; then
+  show_help
+  exit_script 1
+fi
+
+# Ensure the current symlink is valid
+if [ "$1" != "install" ]; then
+  if [ ! -L "../current" ] || [ ! -e "../current" ]; then
+    echo "No active Bun version selected. Use bvm-switch to select a version." >&2
+    exit_script 1
+  fi
+fi
+
+# Delegate the command to the active Bun binary
+case "$1" in
+  install|switch|package|config|env)
+    "../bin/bvm-$1" "${@:2}"
+    ;;
+  *)
+    echo "Error: Unknown command '$1'" >&2
+    show_help
+    exit_script 1
+    ;;
+esac
+
+exit_script 0

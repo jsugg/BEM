@@ -1,0 +1,40 @@
+#!/bin/bash
+
+original_path=$(pwd)
+script_path="$(dirname "$(readlink -f "$0")")"
+cd "$script_path"
+
+function exit_script {
+  cd "$original_path"
+  exit "$1"
+}
+
+# Script to manage global configuration
+
+config_file="../config.json"
+
+if [ ! -f "$config_file" ]; then
+  echo "{}" > "$config_file"
+fi
+
+key=$1
+value=$2
+
+if [ -z "$key" ]; then
+  echo "Usage: bun-config <key> [value]"
+  echo "Current configuration:"
+  cat "$config_file"
+  exit_script 1
+fi
+
+if [ -z "$value" ]; then
+  # Display the value for the given key
+  echo "Value for $key:"
+  jq ".$key" "$config_file"
+else
+  # Set the value for the given key
+  jq ".$key = \"$value\"" "$config_file" > "$config_file.tmp" && mv "$config_file.tmp" "$config_file"
+  echo "Updated $key to $value."
+fi
+
+exit_script 0

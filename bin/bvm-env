@@ -1,0 +1,64 @@
+#!/bin/bash
+
+original_path=$(pwd)
+script_path="$(dirname "$(readlink -f "$0")")"
+cd "$script_path"
+
+function exit_script {
+  cd "$original_path"
+  exit "$1"
+}
+
+# User interface for managing Bun environments
+
+function show_menu {
+  echo "Bun Environment Manager"
+  echo "-----------------------"
+  echo "1) Install new version"
+  echo "2) Switch version"
+  echo "3) Install package"
+  echo "4) Remove package"
+  echo "5) List installed versions"
+  echo "6) Exit"
+  echo "Choose an option: "
+}
+
+while true; do
+  show_menu
+  read -r option
+
+  case $option in
+    1)
+      echo "Enter the version to install (e.g., 1.0.0): "
+      read -r version
+      ./bvm-install "$version"
+      ;;
+    2)
+      echo "Enter the version to switch to (e.g., 1.0.0): "
+      read -r version
+      ./bvm-switch "$version"
+      ;;
+    3)
+      echo "Enter the package name to install: "
+      read -r package_name
+      ./bvm-package install "$package_name"
+      ;;
+    4)
+      echo "Enter the package name to remove: "
+      read -r package_name
+      ./bvm-package remove "$package_name"
+      ;;
+    5)
+      echo "Installed versions:"
+      ls ../versions
+      ;;
+    6)
+      exit_script 0
+      ;;
+    *)
+      echo "Invalid option."
+      ;;
+  esac
+done
+
+exit_script 0

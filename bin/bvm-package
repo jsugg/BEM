@@ -1,0 +1,54 @@
+#!/bin/bash
+
+original_path=$(pwd)
+script_path="$(dirname "$(readlink -f "$0")")"
+cd "$script_path"
+
+function exit_script {
+  cd "$original_path"
+  exit "$1"
+}
+
+# Script to manage Bun packages
+
+action=$1
+package_name=$2
+version_dir="../current"
+
+if [ -z "$action" ] || [ -z "$package_name" ]; then
+  echo "Usage: bun-package <install|remove> <package-name>"
+  exit_script 1
+fi
+
+if [ ! -d "$version_dir" ]; then
+  echo "No active Bun version selected. Use bun-switch to select a version." >&2
+  exit_script 1
+fi
+
+case "$action" in
+  install)
+    echo "Installing package $package_name..."
+    # Simulate package installation
+    # In a real-world scenario, this would involve running the Bun package manager
+    mkdir -p "$version_dir/node_modules" && touch "$version_dir/node_modules/$package_name"
+    ;;
+  remove)
+    echo "Removing package $package_name..."
+    # Simulate package removal
+    # In a real-world scenario, this would involve running the Bun package manager
+    rm -f "$version_dir/node_modules/$package_name"
+    ;;
+  *)
+    echo "Error: Unknown action '$action'" >&2
+    exit_script 1
+    ;;
+esac
+
+if [ $? -eq 0 ]; then
+  echo "Package $action action performed successfully."
+else
+  echo "Failed to $action package $package_name." >&2
+  exit_script 1
+fi
+
+exit_script 0

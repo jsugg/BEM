@@ -1,0 +1,50 @@
+#!/bin/bash
+
+original_path=$(pwd)
+script_path="$(dirname "$(readlink -f "$0")")"
+cd "$script_path"
+
+function exit_script {
+  cd "$original_path"
+  exit "$1"
+}
+
+# Script to remove a version of Bun
+
+bun_versions_dir="../versions"
+version=$1
+install_dir="$bun_versions_dir/$version"
+
+function validate_input {
+  if [ -z "$1" ]; then
+    echo "Usage: bvm-install <version>"
+    exit_script 1
+  fi
+}
+
+function validate_version_exists {
+  if [ ! -d "$install_dir" ]; then
+    echo "Version $version is not installed."
+    exit_script 1
+  fi
+}
+
+function uninstall_bun_version {
+  rm -rf "$install_dir"
+}
+
+function validate_removal {
+  if [ -d "$install_dir" ]; then
+    echo "Failed to remove version $version."
+    exit_script 1
+  else
+    echo "Removed version $version."
+  fi
+}
+
+validate_input $version
+validate_version_exists
+uninstall_bun_version
+validate_removal
+
+exit_script 0

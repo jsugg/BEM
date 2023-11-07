@@ -1,0 +1,39 @@
+#!/bin/bash
+
+original_path=$(pwd)
+script_path="$(dirname "$(readlink -f "$0")")"
+cd "$script_path"
+
+function exit_script {
+  cd "$original_path"
+  exit "$1"
+}
+
+# Script to switch between installed versions of Bun
+
+version=$1
+version_dir="../versions/$version"
+version_from_project_root="versions/$version"
+current_link="../current"
+
+if [ -z "$version" ]; then
+  echo "Usage: bun-switch <version>"
+  exit_script 1
+fi
+
+if [ ! -d "$version_dir" ]; then
+  echo "Bun version $version is not installed."
+  exit_script 1
+fi
+
+echo "Switching to Bun version $version..."
+ln -sfn "$version_from_project_root" "$current_link"
+
+if [ "$(readlink $current_link)" == "$version_from_project_root" ]; then
+  echo "Switched to Bun version $version successfully."
+else
+  echo "Failed to switch to Bun version $version." >&2
+  exit_script 1
+fi
+
+exit_script 0
